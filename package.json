@@ -1,0 +1,31 @@
+{
+  "name": "@vortr/wallet",
+  "version": "0.1.10",
+  "description": "Vortr local signer MCP — auto-fills the taker, fetches keyless calldata from the Vortr connector, and signs+broadcasts Base swaps after a per-swap confirm. The hosted Vortr never holds your key.",
+  "keywords": ["mcp", "model-context-protocol", "defi", "base", "0x", "swap", "signer", "non-custodial", "vortr"],
+  "homepage": "https://vortragents.com",
+  "repository": { "type": "git", "url": "git+https://github.com/vortr/sdk.git", "directory": "packages/wallet" },
+  "license": "MIT",
+  "type": "module",
+  "bin": { "vortr-wallet": "dist/index.js" },
+  "files": ["dist", "README.md"],
+  "publishConfig": { "access": "public" },
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "viem": "^2.30.0",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "@vortr/core": "workspace:*",
+    "tsup": "^8.3.0",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.0",
+    "@types/node": "^25.9.1"
+  }
+}
