@@ -15,6 +15,27 @@ export function resolveToken(s: string): { address: Address; decimals: number; s
   throw new Error(`unknown token "${s}" — use a Base symbol (e.g. USDC, ETH) or 0x address`);
 }
 
+/**
+ * Validate a caller-supplied `amount` as positive base units and return it as a
+ * bigint. Base units are a whole integer of the token's smallest unit (1 USDC =
+ * "1000000"), so a decimal ("1.5"), sign ("-100"), exponent ("5e6") or empty
+ * string is a mistake — reject it loudly here instead of letting BigInt("1.5")
+ * throw deep inside the (best-effort, error-swallowing) balance preflight, or
+ * letting BigInt("-100") = -100n sail past the `> balance` check into a built tx.
+ */
+export function parseBaseUnits(s: string): bigint {
+  const q = s.trim();
+  if (!/^\d+$/.test(q)) {
+    throw new Error(
+      `amount must be in base units — a whole integer string like "1000000" (= 1 USDC), not "${s}". ` +
+        `Don't pass a decimal such as "1.5"; to size by dollars use the usd field instead.`,
+    );
+  }
+  const v = BigInt(q);
+  if (v <= 0n) throw new Error(`amount must be greater than 0 base units (got "${s}")`);
+  return v;
+}
+
 /** Convert a USD notional to integer base-units of a token priced at `priceUsd`. */
 export function usdToBaseUnits(usd: number, priceUsd: number, decimals: number): string {
   if (!(priceUsd > 0)) throw new Error('cannot size by USD: no positive price for the sell token');

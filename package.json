@@ -1,6 +1,6 @@
 {
   "name": "@vortr/wallet",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "description": "Vortr local signer MCP — auto-fills the taker, fetches keyless calldata from the Vortr connector, and signs+broadcasts Base swaps after a per-swap confirm. The hosted Vortr never holds your key.",
   "keywords": ["mcp", "model-context-protocol", "defi", "base", "0x", "swap", "signer", "non-custodial", "vortr"],
   "homepage": "https://vortragents.com",

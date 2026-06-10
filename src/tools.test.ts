@@ -98,6 +98,20 @@ describe('prepareSwapHandler', () => {
     expect(deps2.connector.buildSwap).toHaveBeenCalledWith(expect.objectContaining({ slippageBps: 100 }));
   });
 
+  it('rejects a decimal amount with a clear error, without building or signing', async () => {
+    const deps = makeDeps();
+    const out = parse(await prepareSwapHandler({ sellToken: 'USDC', buyToken: 'ETH', amount: '0.5' }, deps));
+    expect(out.error).toMatch(/base units/i);
+    expect(deps.connector.buildSwap).not.toHaveBeenCalled();
+  });
+
+  it('rejects a negative amount (must not slip past the balance check as a negative bigint)', async () => {
+    const deps = makeDeps();
+    const out = parse(await prepareSwapHandler({ sellToken: 'USDC', buyToken: 'ETH', amount: '-100' }, deps));
+    expect(out.error).toMatch(/base units/i);
+    expect(deps.connector.buildSwap).not.toHaveBeenCalled();
+  });
+
   it('preflight: rejects when wallet balance < sell amount, without building or storing', async () => {
     const deps = makeDeps({
       signer: {
@@ -181,5 +195,12 @@ describe('getQuoteHandler', () => {
     });
     await getQuoteHandler({ sellToken: 'USDC', buyToken: 'ETH', usd: 5 }, deps);
     expect(deps.connector.getQuote).toHaveBeenCalledWith(expect.objectContaining({ amount: '5000000' }));
+  });
+
+  it('rejects a decimal amount before quoting', async () => {
+    const deps = makeDeps();
+    const out = parse(await getQuoteHandler({ sellToken: 'USDC', buyToken: 'ETH', amount: '1.5' }, deps));
+    expect(out.error).toMatch(/base units/i);
+    expect(deps.connector.getQuote).not.toHaveBeenCalled();
   });
 });

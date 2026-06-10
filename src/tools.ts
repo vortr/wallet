@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { formatUnits } from 'viem';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { resolveToken, usdToBaseUnits, isNativeToken } from './amounts.js';
+import { resolveToken, usdToBaseUnits, isNativeToken, parseBaseUnits } from './amounts.js';
 import type { Signer } from './signer.js';
 import type { Connector } from './connector.js';
 import type { PendingStore } from './pending.js';
@@ -40,7 +40,7 @@ export type PrepareArgs = {
 
 /** Resolve the sell amount to base units (uses the connector price for the usd path). */
 async function resolveSellAmount(args: PrepareArgs, deps: ToolDeps): Promise<string> {
-  if (args.amount) return args.amount;
+  if (args.amount !== undefined && args.amount.trim() !== '') return parseBaseUnits(args.amount).toString();
   if (args.usd === undefined) throw new Error('provide either amount (base units) or usd');
   const sell = resolveToken(args.sellToken);
   const priceToken = isNativeToken(sell.address) ? WETH : sell.address;
